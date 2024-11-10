@@ -1,0 +1,84 @@
+
+body {
+	display: flex;
+	font-family: Arial, sans-serif;
+}
+.general-sidebar {
+	width: 150px;
+	background-color: #2c3e50;
+	color: white;
+	height: 100vh;
+	padding: 20px;
+	box-sizing: border-box;
+}
+.sub-sidebar {
+	width: 200px;
+	background-color: #34495e;
+	color: white;
+	height: 100vh;
+	padding: 50px; /* content lower than left menu */
+	box-sizing: border-box;
+}
+.general-sidebar ul, .sub-sidebar ul {
+	list-style-type: none;
+	padding: 0;
+}
+.general-sidebar ul li, .sub-sidebar ul li {
+	margin: 15px 0;
+}
+.general-sidebar ul li a, .sub-sidebar ul li a {
+	color: white;
+	text-decoration: none;
+	display: block;
+	padding: 10px;
+	background-color: #2c3e50;
+	border: 1px solid #34495e;
+	text-align: center;
+	transition: background-color 0.3s;
+}
+.general-sidebar ul li a:hover, .sub-sidebar ul li a:hover {
+	background-color: #3b5998;
+}
+.content {
+	flex: 1;
+	padding: 20px;
+	box-sizing: border-box;
+}
+header {
+	background-color: #34495e;
+	color: white;
+	padding: 20px;
+	text-align: center;
+}
+footer {
+	background-color: #34495e;
+	color: white;
+	padding: 10px;
+	text-align: center;
+	width: 100%;
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	margin-top:auto;
+}
+section {
+	display: none;
+}
+#login { /* position of login */
+	position: relative;
+	top: 20px;
+	left: 50px;
+	padding: 20px;
+}
+#register { /* position of register */
+	position: relative;
+	top: 20px;
+	left: 50px;
+	padding: 20px;
+}
+#profile { /* position of profile */
+	position: relative;
+	top: 20px;
+	left: 50px;
+	padding: 20px;
+}
