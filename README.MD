@@ -1,6 +1,6 @@
 Auction and Marketplace System
 Project Overview
-The Auction and Marketplace System is a web-based application designed to facilitate online auctions and marketplace functionalities. Users can log in, register, manage their profiles, list and bid on products, view and manage orders, leave reviews, and handle shipping information. The system is built using HTML, CSS, and JavaScript.
+The Auction and Marketplace System is a web-based application designed to facilitate online auctions and marketplace functionalities. Users can log in, register, manage their profiles, list and bid on products, view and manage orders, leave reviews, and handle         shipping information. The system is built using HTML, CSS, and JavaScript.
 
 Project Progress
 
