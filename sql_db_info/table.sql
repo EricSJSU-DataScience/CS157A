@@ -1,14 +1,14 @@
-CREATE DATABASE ebay_database;
-USE ebay_database;
+CREATE DATABASE marketplace_database;
+USE marketplace_database;
 
 CREATE TABLE User (
-    User_ID INT PRIMARY KEY,
-    Name VARCHAR(100),
-    Email VARCHAR(100) UNIQUE,
-    Password VARCHAR(100),
+    User_ID INT AUTO_INCREMENT PRIMARY KEY,
+    Name VARCHAR(100) NOT NULL,
+    Email VARCHAR(100) UNIQUE NOT NULL,
+    Password VARCHAR(100) NOT NULL,
     Address TEXT,
     Phone VARCHAR(15),
-    Role ENUM('Seller', 'Buyer')
+    Role ENUM('Seller', 'Buyer') NOT NULL
 );
 
 CREATE TABLE Product (
