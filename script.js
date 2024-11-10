@@ -5,10 +5,24 @@ let isLoggedIn = false;
 let loggedInUser_id = null;
 let loggedInUser_name = null;
 
-function showGeneralSection(generalSection) {
+document.addEventListener('DOMContentLoaded', () => {
+    // Initially update the menu to show only "User," "Product," and "Auction"
+    updateMenu();
 
+    // Set visibility for sections explicitly
+    document.querySelectorAll('section').forEach(section => {
+        if (['user', 'product', 'auction'].includes(section.id)) {
+            section.style.display = 'block';
+        } else {
+            section.style.display = 'none';
+        }
+    });
+});
+
+function showGeneralSection(generalSection) {
+	
 	// Check if the user is logged in before allowing access to certain sections
-    if (['product', 'auction', 'order', 'review', 'shipping', 'notification'].includes(generalSection) && !isLoggedIn) {
+    if (['order', 'review', 'shipping', 'notification'].includes(generalSection) && !isLoggedIn) {
         alert('Please log in to access this section.');
         return;
     }
@@ -17,21 +31,6 @@ function showGeneralSection(generalSection) {
     document.querySelectorAll('section').forEach(section => {
         section.style.display = 'none';
     });
-	/*
-	// Show the related section if applicable
-    if (generalSection === 'user') {
-        if (isLoggedIn) {
-            document.getElementById('profile').style.display = 'block';
-        } else {
-            document.getElementById('login').style.display = 'block';
-        }
-    } else {
-        const sectionToShow = document.getElementById(generalSection);
-        if (sectionToShow) {
-            sectionToShow.style.display = 'block';
-        }
-    }
-	*/
 
     // Define sub menu items based on general category selected
     const subMenuItems = {
