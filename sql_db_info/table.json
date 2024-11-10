@@ -1,0 +1,99 @@
+{
+    "MarketplaceSystem": {
+        "Users": [
+            {
+                "User_ID": 1,
+                "Name": "Alice Smith",
+                "Email": "alice@example.com",
+                "Role": "Seller",
+                "Address": "123 Main St",
+                "Phone": "1234567890"
+            }
+        ],
+        "Products": [
+            {
+                "Product_ID": 1,
+                "Title": "Laptop",
+                "Description": "Gaming Laptop",
+                "Price": 999.99,
+                "Seller_ID": 1,
+                "Category_ID": 1,
+                "Quantity": 10,
+                "Status": "Available"
+            }
+        ],
+        "Categories": [
+            {
+                "Category_ID": 1,
+                "Category_Name": "Electronics",
+                "Description": "Electronic devices and accessories"
+            }
+        ],
+        "Auctions": [
+            {
+                "Auction_ID": 1,
+                "Product_ID": 1,
+                "Starting_Price": 500.00,
+                "End_Date": "2024-11-01"
+            }
+        ],
+        "Bids": [
+            {
+                "Bid_ID": 1,
+                "Auction_ID": 1,
+                "User_ID": 2,
+                "Bid_Amount": 600.00,
+                "Bid_Time": "2024-10-20T14:30:00"
+            }
+        ],
+        "Orders": [
+            {
+                "Order_ID": 1,
+                "Product_ID": 1,
+                "Buyer_ID": 2,
+                "Order_Date": "2024-10-22",
+                "Quantity": 1,
+                "Total_Amount": 999.99,
+                "Payment_Status": "Paid"
+            }
+        ],
+        "Payments": [
+            {
+                "Payment_ID": 1,
+                "Order_ID": 1,
+                "Payment_Method": "Credit Card",
+                "Payment_Date": "2024-10-22",
+                "Payment_Amount": 999.99
+            }
+        ],
+        "Reviews": [
+            {
+                "Review_ID": 1,
+                "Product_ID": 1,
+                "User_ID": 2,
+                "Rating": 5,
+                "Review_Text": "Great product!",
+                "Review_Date": "2024-10-23"
+            }
+        ],
+        "ShippingRecords": [
+            {
+                "Shipping_ID": 1,
+                "Order_ID": 1,
+                "Shipping_Address": "456 Oak St",
+                "Shipping_Method": "Express",
+                "Shipping_Date": "2024-10-23",
+                "Delivery_Date": "2024-10-25"
+            }
+        ],
+        "Notifications": [
+            {
+                "Notification_ID": 1,
+                "User_ID": 2,
+                "Message": "Your bid was accepted",
+                "Notification_Date": "2024-10-20",
+                "Status": "Unread"
+            }
+        ]
+    }
+}
