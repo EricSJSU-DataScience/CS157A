@@ -11,19 +11,19 @@ app.use(bodyParser.json());
 
 // MySQL Connection 
 const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'root', // replace with localhost user
-  password: 'sql+016886922', // replace with localhost password
-  database: 'marketplace_database', // Replace with your database name
-  port: 3306 // replace with port in MySQL workbench 
+	host: 'localhost',
+	user: 'root', // replace with localhost user
+	password: 'sql+016886922', // replace with localhost password
+	database: 'marketplace_database', // Replace with your database name
+	port: 3306 // replace with port in MySQL workbench 
 });
 
 db.connect((err) => {
-  if (err) {
-    console.error('Error connecting to the database:', err);
-    return;
-  }
-  console.log('Connected to MySQL Database.');
+	if (err) {
+		console.error('Error connecting to the database:', err);
+		return;
+	}
+	console.log('Connected to MySQL Database.');
 });
 
 // Login Endpoint
@@ -33,11 +33,16 @@ app.post('/login', (req, res) => {
   const query = 'SELECT * FROM User WHERE Email = ? AND Password = ?';
   db.query(query, [email, password], (err, results) => {
     if (err) {
-      res.status(500).send('Error connecting to the database');
+		res.status(500).send('Error connecting to the database');
     } else if (results.length > 0) {
-      res.status(200).send('Login successful');
+		// Return the user information on successful login
+		const user = {
+			user_id: results[0].User_ID,
+			name: results[0].Name
+		};
+		res.status(200).json(user);
     } else {
-      res.status(401).send('Invalid email or password');
+		res.status(401).send('Invalid email or password');
     }
   });
 });
@@ -62,5 +67,5 @@ app.post('/register', (req, res) => {
 
 // Start server
 app.listen(3000, () => {
-  console.log('Server running on http://localhost:3000');
+	console.log('Server running on http://localhost:3000');
 });
