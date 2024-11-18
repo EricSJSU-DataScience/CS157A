@@ -4,11 +4,14 @@ function Orders({ loggedInUserId }) {
     const [orders, setOrders] = useState([]);
 
     useEffect(() => {
-        fetch(`http://localhost:5000/orders/${loggedInUserId}`)
-            .then(res => res.json())
-            .then(data => setOrders(data))
-            .catch(err => console.error('Error fetching orders:', err));
-    }, [loggedInUserId]);
+    fetch(`http://localhost:5000/orders/${loggedInUserId}`)
+        .then(res => res.json())
+        .then(data => {
+            console.log('Orders fetched from backend:', data); // Log to confirm data reception
+            setOrders(data);
+        })
+        .catch(err => console.error('Error fetching orders:', err));
+}, [loggedInUserId]);
 
     return (
         <div>

@@ -117,63 +117,62 @@ app.delete('/cart/delete', (req, res) => {
 });
 
 // Place an order
+// Place an order
 app.post('/place-order', (req, res) => {
-    const { userId, cartItems, paymentMethod, shippingAddress, shippingMethod, totalCost } = req.body;
+    const { userId, cartItems, paymentMethod, shippingAddress, totalCost } = req.body;
 
-    // Insert into Orders table
-    const orderQuery = `
-        INSERT INTO Orders (User_ID, Payment_Status, Shipping_Address, Shipping_Status, Total_Amount)
-        VALUES (?, 'Paid', ?, 'Pending', ?)
-    `;
-    
-    db.query(orderQuery, [userId, shippingAddress, totalCost], (err, results) => {
-        if (err) {
-            console.error('Error placing order:', err);
-            return res.status(500).json({ message: 'Error placing order' });
-        }
-
-        const orderId = results.insertId;
-
-        // Insert into Shipping table
-        const shippingQuery = `
-            INSERT INTO Shipping (Order_ID, Shipping_Address, Shipping_Method)
-            VALUES (?, ?, ?)
-        `;
-        
-        db.query(shippingQuery, [orderId, shippingAddress, shippingMethod], (err) => {
-            if (err) {
-                console.error('Error inserting shipping details:', err);
-                return res.status(500).json({ message: 'Error inserting shipping details' });
-            }
-
-            // Insert into OrderItems table if cartItems exist
-            if (cartItems.length > 0) {
-                const orderItemsQuery = `
-                    INSERT INTO OrderItems (Order_ID, Product_ID, Quantity)
-                    VALUES ?
-                `;
-                const orderItemsData = cartItems.map(item => [orderId, item.Product_ID, item.Quantity]);
-
-                db.query(orderItemsQuery, [orderItemsData], (err) => {
-                    if (err) {
-                        console.error('Error inserting order items:', err);
-                        return res.status(500).json({ message: 'Error inserting order items' });
-                    }
-
-                    // Clear the shopping cart for the user
-                    const clearCartQuery = 'DELETE FROM ShoppingCart WHERE User_ID = ?';
-                    db.query(clearCartQuery, [userId], (err) => {
-                        if (err) {
-                            console.error('Error clearing cart:', err);
-                            return res.status(500).json({ message: 'Error clearing cart' });
-                        }
-                        res.status(200).json({ message: 'Order placed successfully' });
-                    });
-                });
-            } else {
-                res.status(400).json({ message: 'Cart is empty' });
-            }
+    // Loop through the cart items and insert each one into the Orders table
+    const orderQueries = cartItems.map(item => {
+        return new Promise((resolve, reject) => {
+            const orderQuery = `
+                INSERT INTO Orders (User_ID, Product_ID, Shipping_Address, Quantity, Total_Amount, Payment_Status, Shipping_Status)
+                VALUES (?, ?, ?, ?, ?, 'Paid', 'Pending')
+            `;
+            db.query(orderQuery, [userId, item.Product_ID, shippingAddress, item.Quantity, totalCost], (err, results) => {
+                if (err) {
+                    console.error('Error placing order:', err);
+                    reject(err);
+                } else {
+                    resolve(results);
+                }
+            });
         });
+    });
+
+    // Execute all the order insertion promises
+    Promise.all(orderQueries)
+        .then(() => {
+            // Clear the shopping cart for the user after all orders are placed successfully
+            const clearCartQuery = 'DELETE FROM ShoppingCart WHERE User_ID = ?';
+            db.query(clearCartQuery, [userId], (err) => {
+                if (err) {
+                    console.error('Error clearing cart:', err);
+                    return res.status(500).json({ message: 'Error clearing cart' });
+                }
+                res.status(200).json({ message: 'Order placed successfully' });
+            });
+        })
+        .catch((err) => {
+            res.status(500).json({ message: 'Error placing order' });
+        });
+});
+
+
+// Fetch orders for a user
+app.get('/orders/:userId', (req, res) => {
+    const { userId } = req.params;
+    const query = `
+        SELECT Order_ID, Total_Amount, Payment_Status, Shipping_Status
+        FROM Orders
+        WHERE User_ID = ?
+    `;
+    db.query(query, [userId], (err, results) => {
+        if (err) {
+            console.error('Error fetching orders:', err);
+            return res.status(500).json({ message: 'Error fetching orders' });
+        }
+        console.log('Orders fetched for user:', results); // Log to see if data is correct
+        res.status(200).json(results);
     });
 });
 
