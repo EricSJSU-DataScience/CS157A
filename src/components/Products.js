@@ -46,19 +46,21 @@ function Products({ loggedInUserId }) {
         </div>
     ); */
 	return (
-        <div>
-            <h2>Available Products</h2>
+        <div style={styles.productsContainer}>
+            <h2 style={styles.productsTitle}>Available Products</h2>
             {products.length === 0 ? (
-                <p>No products available.</p>
+                <p style={styles.noProductsMessage}>No products available.</p>
             ) : (
-                <ul>
+                <ul style={styles.productsList}>
                     {products.map(product => (
-                        <li key={product.Product_ID}>
-                            <h3>{product.Title}</h3>
-                            <p>{product.Description}</p>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                                <p>Price: ${product.Price}</p>
-                                <button onClick={() => addToCart(product.Product_ID)}>Add to Cart</button>
+                        <li key={product.Product_ID} style={styles.productItem}>
+                            <div style={styles.productHeader}>
+                                <h3 style={styles.productTitle}>{product.Title}</h3>
+                            </div>
+                            <p style={styles.productDescription}>{product.Description}</p>
+                            <div style={styles.productFooter}>
+                                <p style={styles.productPrice}>Price: ${product.Price}</p>
+                                <button style={styles.addToCartButton} onClick={() => addToCart(product.Product_ID)}>Add to Cart</button>
                             </div>
                         </li>
                     ))}
@@ -67,5 +69,64 @@ function Products({ loggedInUserId }) {
         </div>
     );
 }
+
+const styles = {
+    productsContainer: {
+        padding: '20px',
+        fontFamily: 'Arial, sans-serif',
+    },
+    productsTitle: {
+        textAlign: 'left',
+        marginBottom: '20px',
+        fontSize: '24px',
+        fontWeight: 'bold',
+    },
+    productsList: {
+        listStyle: 'none',
+        padding: '0',
+    },
+    productItem: {
+        border: '1px solid #ccc',
+        borderRadius: '5px',
+        padding: '15px',
+        marginBottom: '15px',
+        boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
+    },
+    productHeader: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: '10px',
+    },
+    productTitle: {
+        fontSize: '20px',
+        margin: '0',
+    },
+    productDescription: {
+        fontSize: '16px',
+        marginBottom: '10px',
+    },
+    productFooter: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    productPrice: {
+        fontSize: '16px',
+        fontWeight: 'bold',
+    },
+    addToCartButton: {
+        padding: '10px',
+        backgroundColor: '#007bff',
+        color: 'white',
+        border: 'none',
+        borderRadius: '5px',
+        cursor: 'pointer',
+    },
+    addToCartButtonHover: {
+        backgroundColor: '#0056b3',
+    },
+};
+
 
 export default Products;
