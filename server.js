@@ -10,7 +10,7 @@ app.use(express.json()); // Modern way to handle JSON requests
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: 'sql+016886922', // Replace with your MySQL password
+    password: '1234567', // Replace with your MySQL password
     database: 'market',
     port: 3306
 });
@@ -171,7 +171,7 @@ app.get('/orders/:userId', (req, res) => {
             console.error('Error fetching orders:', err);
             return res.status(500).json({ message: 'Error fetching orders' });
         }
-        console.log('Orders fetched for user:', results); // Log to see if data is correct
+        //console.log('Orders fetched for user:', results); // Log to see if data is correct
         res.status(200).json(results);
     });
 });
