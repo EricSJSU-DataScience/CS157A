@@ -1,41 +1,58 @@
-INSERT INTO User VALUES
-(1, 'Alice Smith', 'alices@example.com', 'password1', '123 Main St, Springfield', '1000123456', 'Seller'),
-(2, 'Bob Jones', 'bobj@example.com', 'password2', '456 Oak St, Springfield', '1000789432', 'Seller'),
-(3, 'Michael Johnson', 'mjohnson@example.com', 'password3', '789 Elm St, Springfield', '1000432178', 'Seller'),
-(4, 'Emily Davis', 'edavis@example.com', 'password4', '101 Maple Ave, Springfield', '1000654321', 'Seller'),
-(5, 'William Brown', 'wbrown@example.com', 'password5', '202 Birch Blvd, Springfield', '1000987654', 'Seller'),
-(6, 'Ava Wilson', 'awilson@example.com', 'password6', '303 Pine Dr, Springfield', '1000234876', 'Buyer'),
-(7, 'James Anderson', 'janderson@example.com', 'password7', '404 Cedar Ln, Springfield', '1000789123', 'Buyer'),
-(8, 'Sophia Martinez', 'smartinez@example.com', 'password8', '505 Aspen St, Springfield', '1000345678', 'Buyer'),
-(9, 'Oliver Garcia', 'ogarcia@example.com', 'password9', '606 Redwood Rd, Springfield', '1000567894', 'Buyer'),
-(10, 'Mia Rodriguez', 'mrodriguez@example.com', 'password10', '707 Spruce St, Springfield', '1000456789', 'Buyer');
+USE market;
 
+-- Insert data into User table
+INSERT INTO User (Name, Email, Password, Phone, Role) VALUES
+('Alice Smith', 'alice@example.com', '111', '1234567890', 'Buyer'),
+('Bob Johnson', 'bob@example.com', 'hashedpassword2', '2345678901', 'Seller'),
+('Charlie Brown', 'charlie@example.com', 'hashedpassword3', '3456789012', 'Buyer'),
+('Diana Prince', 'diana@example.com', 'hashedpassword4', '4567890123', 'Seller');
 
+-- Insert data into Product table
+INSERT INTO Product (Title, Description, Price, Seller_ID, Quantity) VALUES
+('Smartphone', 'Latest model smartphone', 699.99, 2, 10),
+('Leather Jacket', 'Stylish black leather jacket', 149.99, 4, 5),
+('Cookbook', 'A guide to gourmet cooking', 24.99, 2, 20),
+('Blender', 'High-speed kitchen blender', 89.99, 4, 8);
 
-INSERT INTO Product VALUES
-(1, 'Laptop', 'Gaming Laptop', 999.99, 1, 1, 10, '2024-10-01', 'Available');
+-- Insert data into ShoppingCart table
+INSERT INTO ShoppingCart (User_ID, Product_ID, Quantity) VALUES
+(1, 1, 1),
+(3, 2, 2),
+(1, 3, 1);
 
-INSERT INTO Auction VALUES
-(1, 1, 500.00, '2024-11-01', NULL);
+-- Insert data into Auction table
+INSERT INTO Auction (Product_ID, Starting_Price, End_Date) VALUES
+(1, 500.00, '2024-12-15'),
+(2, 100.00, '2024-12-20');
 
-INSERT INTO Bid VALUES
-(1, 1, 2, 600.00, '2024-10-20 14:30:00');
+-- Insert data into Bid table
+INSERT INTO Bid (Auction_ID, User_ID, Bid_Amount) VALUES
+(1, 3, 520.00),
+(1, 1, 530.00),
+(2, 3, 120.00);
 
-INSERT INTO Orders VALUES
-(1, 1, 2, '2024-10-22', 1, 999.99, 'Paid');
+-- Insert data into Orders table
+INSERT INTO Orders (User_ID, Product_ID, Quantity, Total_Amount, Payment_Status, Shipping_Status) VALUES
+(1, 1, 1, 699.99, 'Paid', 'Shipped'),
+(3, 2, 1, 149.99, 'Pending', 'Pending');
 
-INSERT INTO Payment VALUES
-(1, 1, 'Credit Card', '2024-10-22', 999.99);
+-- Insert data into Payment table
+INSERT INTO Payment (Order_ID, Payment_Method, Payment_Amount) VALUES
+(1, 'Credit Card', 699.99),
+(2, 'PayPal', 149.99);
 
+-- Insert data into Review table
+INSERT INTO Review (Product_ID, User_ID, Rating, Review_Text) VALUES
+(1, 1, 5, 'Excellent product!'),
+(2, 3, 4, 'Very stylish and comfortable'),
+(3, 1, 3, 'Decent content but could be better');
 
-INSERT INTO Review VALUES
-(1, 1, 2, 5, 'Great product!', '2024-10-23');
+-- Insert data into Shipping table
+INSERT INTO Shipping (Order_ID, Shipping_Address, Shipping_Info, Shipping_Method, Tracking_Number, Shipping_Date, Delivery_Date) VALUES
+(1, '123 Main St, Springfield', 'Leave at front door', 'Express', 'TRACK123456', '2024-11-20', '2024-11-22'),
+(2, '456 Elm St, Metropolis', 'Ring doorbell on arrival', 'Standard', 'TRACK789012', '2024-11-21', '2024-11-25');
 
-INSERT INTO Category VALUES
-(1, 'Electronics', 'Electronic devices and accessories');
-
-INSERT INTO Shipping VALUES
-(1, 1, '123 Main St', 'Express', '2024-10-23', '2024-10-25');
-
-INSERT INTO Notification VALUES
-(1, 2, 'Your bid was accepted', '2024-10-20', 'Unread');
+-- Insert data into Notification table
+INSERT INTO Notification (User_ID, Message, Status) VALUES
+(1, 'Your order has been shipped', 'Unread'),
+(3, 'New bid placed on your auction', 'Read');
