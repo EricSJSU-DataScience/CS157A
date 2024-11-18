@@ -68,16 +68,18 @@ function Cart({ loggedInUserId }) {
                 body: JSON.stringify(orderDetails)
             });
 
-            const result = await response.json();
-            if (response.ok) {
-                alert(result.message);
-                // Clear the cart on frontend
-                setCartItems([]);
-                setTotalCost(0);
-                setShowCheckout(false);
-            } else {
-                alert(result.message);
+            if (!response.ok) {
+                const errorResult = await response.json();
+                alert(errorResult.message || 'Failed to place order. Please try again.');
+                return;
             }
+
+            const result = await response.json();
+            alert(result.message);
+            // Clear the cart on frontend
+            setCartItems([]);
+            setTotalCost(0);
+            setShowCheckout(false);
         } catch (error) {
             console.error('Error placing order:', error);
             alert('Failed to place order');
@@ -85,28 +87,37 @@ function Cart({ loggedInUserId }) {
     };
 
     return (
-        <div>
-            <h2>Your Cart</h2>
-            {cartItems.length === 0 ? (
-                <p>Your cart is empty.</p>
-            ) : (
-                <>
-                    {cartItems.map(item => (
-                        <div key={item.Product_ID}>
-                            <h3>{item.Title}</h3>
-                            <p>{item.Description}</p>
-                            <p>Price: ${item.Price}</p>
-                            <p>Quantity: {item.Quantity}</p>
-                            <button onClick={() => handleDelete(item.Product_ID)}>Delete</button>
-                        </div>
-                    ))}
-                    <h3>Total Cost: ${totalCost.toFixed(2)}</h3>
-                    <button onClick={() => setShowCheckout(true)}>Checkout</button>
-                </>
-            )}
+        <div style={{ display: 'flex', gap: '20px' }}>
+            {/* Cart Items Section */}
+            <div style={{ flex: 2 }}>
+                <h2>Your Cart</h2>
+                {cartItems.length === 0 ? (
+                    <p>Your cart is empty.</p>
+                ) : (
+                    <ul>
+						<div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+							<h3>Total Cost: ${totalCost.toFixed(2)}</h3>
+							<button onClick={() => setShowCheckout(true)}>Checkout</button>
+						</div>
+                        {cartItems.map(item => (
+                            <div key={item.Product_ID}>
+                                <h3>{item.Title}</h3>
+                                <p>{item.Description}</p>
+								<div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                                <p>Price: ${item.Price}</p>
+                                <p>Quantity: {item.Quantity}</p>
+								</div>
+                                <button onClick={() => handleDelete(item.Product_ID)}>Delete</button>
+                            </div>
+                        ))}
+						
+                    </ul>
+                )}
+            </div>
 
+            {/* Checkout Section */}
             {showCheckout && (
-                <div>
+                <div style={{ flex: 1, border: '1px solid #ccc', padding: '20px' }}>
                     <h2>Checkout</h2>
                     <label>Payment Method:</label>
                     <select value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)}>
@@ -123,6 +134,7 @@ function Cart({ loggedInUserId }) {
                         <option value="Express">Express</option>
                     </select>
                     <br />
+					{/* Confirm Order Button */}
                     <button onClick={handleConfirmOrder}>Confirm Order</button>
                     <button onClick={() => setShowCheckout(false)}>Cancel</button>
                 </div>

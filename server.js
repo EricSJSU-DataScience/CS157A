@@ -177,6 +177,27 @@ app.post('/place-order', (req, res) => {
     });
 });
 
+// Fetch products eligible for review
+app.get('/products-to-review/:userId', (req, res) => {
+    const { userId } = req.params;
+    const query = `
+        SELECT p.Product_ID, p.Title, p.Description
+        FROM Product AS p
+        JOIN Orders AS o ON p.Product_ID = o.Product_ID
+        JOIN OrderItems AS oi ON o.Order_ID = oi.Order_ID
+        WHERE o.User_ID = ? AND o.Shipping_Status = 'Delivered'
+        GROUP BY p.Product_ID, p.Title, p.Description
+    `;
+    db.query(query, [userId], (err, results) => {
+        if (err) {
+            console.error('Error fetching products to review:', err);
+            return res.status(500).json({ message: 'Error fetching products to review' });
+        }
+        console.log('Products fetched for review:', results); // Log the results
+        res.status(200).json(results);
+    });
+});
+
 
 // Start the server
 const PORT = 5000;
