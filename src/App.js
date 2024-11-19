@@ -18,16 +18,16 @@ function App() {
     return (
         <div>
             <Navbar setActiveSection={setActiveSection} />
-            {activeSection === 'home' && <Home />}
+            {activeSection === 'home' && <Home loggedInUserId={loggedInUserId}/>}
             {activeSection === 'login' && <Login setLoggedInUserId={setLoggedInUserId} />}
             {activeSection === 'register' && <Register />}
             {activeSection === 'products' && <Products loggedInUserId={loggedInUserId} />}
             {activeSection === 'cart' && <Cart loggedInUserId={loggedInUserId} />}
 	    {activeSection === 'orders' && <Orders loggedInUserId={loggedInUserId} />}
-            {activeSection === 'review' && <Review />}
+            {activeSection === 'review' && <Review loggedInUserId={loggedInUserId}/>}
             {activeSection === 'auction' && <Auction />}
             {activeSection === 'shipping' && <Shipping />}
-            {activeSection === 'notifications' && <Notifications />}
+            {activeSection === 'notifications' && <Notifications loggedInUserId={loggedInUserId}/>}
         </div>
     );
 }

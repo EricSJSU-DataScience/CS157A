@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 function Login({ setLoggedInUserId }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+	const [userName, setUserName] = useState('');     
+	const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -14,6 +16,8 @@ function Login({ setLoggedInUserId }) {
         const result = await response.json();
         if (response.ok) {
             setLoggedInUserId(result.user.User_ID);
+			setUserName(result.user.User_Name); // Set the user's name from the response
+            setIsLoggedIn(true); // Set the login status to true
             alert('Logged in successfully');
         } else {
             alert(result.message);

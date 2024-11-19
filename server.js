@@ -116,45 +116,173 @@ app.delete('/cart/delete', (req, res) => {
     });
 });
 
-// Place an order
-// Place an order
+/* // Place an order
 app.post('/place-order', (req, res) => {
-    const { userId, cartItems, paymentMethod, shippingAddress, totalCost } = req.body;
+    const { userId, shippingAddress } = req.body;
 
-    // Loop through the cart items and insert each one into the Orders table
-    const orderQueries = cartItems.map(item => {
-        return new Promise((resolve, reject) => {
-            const orderQuery = `
-                INSERT INTO Orders (User_ID, Product_ID, Shipping_Address, Quantity, Total_Amount, Payment_Status, Shipping_Status)
-                VALUES (?, ?, ?, ?, ?, 'Paid', 'Pending')
+    // Start a transaction 
+    db.beginTransaction((err) => {
+        if (err) {
+            console.error('Error starting transaction:', err);
+            return res.status(500).json({ message: 'Error placing order' });
+        }
+		// using commit and rollback reference
+		// https://www.digitalocean.com/community/tutorials/sql-commit-sql-rollback?form=MG0AV3
+        // Step 1: Insert a new record into the Orders table
+        const insertOrderQuery = `
+            INSERT INTO Orders (User_ID, Shipping_Address, Total_Amount)
+            SELECT sc.User_ID, ?, SUM(p.Price * sc.Quantity)
+            FROM ShoppingCart sc
+            JOIN Product p ON sc.Product_ID = p.Product_ID
+            WHERE sc.User_ID = ?
+            GROUP BY sc.User_ID
+        `;
+
+        db.query(insertOrderQuery, [shippingAddress, userId], (err, results) => {
+            if (err) {
+                console.error('Error inserting order:', err);
+                return db.rollback(() => {
+                    res.status(500).json({ message: 'Error placing order' });
+                });
+            }
+
+            // Step 2: Get the newly generated Order_ID
+            const orderId = results.insertId;
+
+            // Step 3: Insert records into the OrderItems table for each item in the ShoppingCart
+            const insertOrderItemsQuery = `
+                INSERT INTO OrderItems (Order_ID, Product_ID, Quantity)
+                SELECT ?, sc.Product_ID, sc.Quantity
+                FROM ShoppingCart sc
+                WHERE sc.User_ID = ?
             `;
-            db.query(orderQuery, [userId, item.Product_ID, shippingAddress, item.Quantity, totalCost], (err, results) => {
+
+            db.query(insertOrderItemsQuery, [orderId, userId], (err) => {
                 if (err) {
-                    console.error('Error placing order:', err);
-                    reject(err);
-                } else {
-                    resolve(results);
+                    console.error('Error inserting order items:', err);
+                    return db.rollback(() => {
+                        res.status(500).json({ message: 'Error placing order' });
+                    });
                 }
+
+                // Step 4: Delete the records from ShoppingCart
+                const deleteCartQuery = 'DELETE FROM ShoppingCart WHERE User_ID = ?';
+
+                db.query(deleteCartQuery, [userId], (err) => {
+                    if (err) {
+                        console.error('Error clearing shopping cart:', err);
+                        return db.rollback(() => {
+                            res.status(500).json({ message: 'Error placing order' });
+                        });
+                    }
+
+                    // Commit the transaction
+                    db.commit((err) => {
+                        if (err) {
+                            console.error('Error committing transaction:', err);
+                            return db.rollback(() => {
+                                res.status(500).json({ message: 'Error placing order' });
+                            });
+                        }
+
+                        res.status(200).json({ message: 'Order placed successfully' });
+                    });
+                });
             });
         });
     });
+});
+ */
 
-    // Execute all the order insertion promises
-    Promise.all(orderQueries)
-        .then(() => {
-            // Clear the shopping cart for the user after all orders are placed successfully
-            const clearCartQuery = 'DELETE FROM ShoppingCart WHERE User_ID = ?';
-            db.query(clearCartQuery, [userId], (err) => {
+app.post('/place-order', (req, res) => {
+    const { userId, shippingAddress } = req.body;
+    // Step 1: Check if enough product quantity is available
+    const checkProductQuantityQuery = `
+        SELECT p.Product_ID, p.Quantity, sc.Quantity AS CartQuantity
+        FROM ShoppingCart sc
+        JOIN Product p ON sc.Product_ID = p.Product_ID
+        WHERE sc.User_ID = ?
+        HAVING p.Quantity >= sc.Quantity
+    `;
+    db.query(checkProductQuantityQuery, [userId], (err, results) => {
+        if (err) {
+            console.error('Error checking product quantities:', err);
+            return res.status(500).json({ message: 'Error placing order' });
+        }
+        // If no results are returned, it means there is insufficient stock for at least one product
+        if (results.length === 0) {
+            return res.status(400).json({ message: 'One or more products in your cart are out of stock or not enough quantity available' });
+        }
+        // Step 2: Start the transaction to place an order
+        db.beginTransaction((err) => {
+            if (err) {
+                console.error('Error starting transaction:', err);
+                return res.status(500).json({ message: 'Error placing order' });
+            }
+            // Step 3: Insert the order record into the Orders table
+            const insertOrderQuery = `
+                INSERT INTO Orders (User_ID, Shipping_Address, Total_Amount)
+                SELECT sc.User_ID, ?, SUM(p.Price * sc.Quantity)
+                FROM ShoppingCart sc
+                JOIN Product p ON sc.Product_ID = p.Product_ID
+                WHERE sc.User_ID = ?
+                GROUP BY sc.User_ID
+            `;
+
+            db.query(insertOrderQuery, [shippingAddress, userId], (err, results) => {
                 if (err) {
-                    console.error('Error clearing cart:', err);
-                    return res.status(500).json({ message: 'Error clearing cart' });
+                    console.error('Error inserting order:', err);
+                    return db.rollback(() => {
+                        res.status(500).json({ message: 'Error placing order' });
+                    });
                 }
-                res.status(200).json({ message: 'Order placed successfully' });
+
+                // Step 4: Get the newly generated Order_ID
+                const orderId = results.insertId;
+
+                // Step 5: Insert records into the OrderItems table for each item in the ShoppingCart
+                const insertOrderItemsQuery = `
+                    INSERT INTO OrderItems (Order_ID, Product_ID, Quantity)
+                    SELECT ?, sc.Product_ID, sc.Quantity
+                    FROM ShoppingCart sc
+                    WHERE sc.User_ID = ?
+                `;
+
+                db.query(insertOrderItemsQuery, [orderId, userId], (err) => {
+                    if (err) {
+                        console.error('Error inserting order items:', err);
+                        return db.rollback(() => {
+                            res.status(500).json({ message: 'Error placing order' });
+                        });
+                    }
+
+                    // Step 6: Delete the records from ShoppingCart
+                    const deleteCartQuery = 'DELETE FROM ShoppingCart WHERE User_ID = ?';
+
+                    db.query(deleteCartQuery, [userId], (err) => {
+                        if (err) {
+                            console.error('Error clearing shopping cart:', err);
+                            return db.rollback(() => {
+                                res.status(500).json({ message: 'Error placing order' });
+                            });
+                        }
+
+                        // Step 7: Commit the transaction
+                        db.commit((err) => {
+                            if (err) {
+                                console.error('Error committing transaction:', err);
+                                return db.rollback(() => {
+                                    res.status(500).json({ message: 'Error placing order' });
+                                });
+                            }
+
+                            res.status(200).json({ message: 'Order placed successfully' });
+                        });
+                    });
+                });
             });
-        })
-        .catch((err) => {
-            res.status(500).json({ message: 'Error placing order' });
         });
+    });
 });
 
 
@@ -166,6 +294,7 @@ app.get('/orders/:userId', (req, res) => {
         FROM Orders
         WHERE User_ID = ?
     `;
+	// console.log(`Orders fetched for user: ${userId}`);
     db.query(query, [userId], (err, results) => {
         if (err) {
             console.error('Error fetching orders:', err);
@@ -176,26 +305,144 @@ app.get('/orders/:userId', (req, res) => {
     });
 });
 
-// Fetch products eligible for review
-app.get('/products-to-review/:userId', (req, res) => {
+// Mark an order as shipped
+app.put('/orders/:orderId/shipping-status/mark-shipped', (req, res) => {
+    const orderId = req.params.orderId;
+    const query = `UPDATE Orders SET Shipping_Status = 'Shipped' WHERE Order_ID = ?`;
+	// TO-DO: add query for shipping table
+    db.query(query, [orderId], (err, results) => {
+        if (err) {
+            console.error('Error marking order as shipped:', err);
+            return res.status(500).json({ success: false, message: 'Error updating shipping status to shipped' });
+        }
+
+        if (results.affectedRows === 0) {
+            return res.status(404).json({ success: false, message: 'Order not found' });
+        }
+
+        res.status(200).json({ success: true, message: 'Order marked as shipped' });
+    });
+});
+
+// Mark an order as delivered
+app.put('/orders/:orderId/shipping-status/mark-delivered', (req, res) => {
+    const orderId = req.params.orderId;
+    const updateOrderQuery = `UPDATE Orders SET Shipping_Status = 'Delivered' WHERE Order_ID = ?`;
+
+    // Update the order shipping status to 'Delivered'
+    db.query(updateOrderQuery, [orderId], (err, results) => {
+        if (err) {
+            console.error('Error updating shipping status to delivered:', err);
+            return res.status(500).json({ success: false, message: 'Error updating shipping status to delivered' });
+        }
+
+        if (results.affectedRows === 0) {
+            return res.status(404).json({ success: false, message: 'Order not found' });
+        }
+
+        res.status(200).json({ success: true, message: 'Order marked as delivered' });
+    });
+});
+
+
+// Fetch reviews for a user
+app.get('/show-review/:userId', (req, res) => {
     const { userId } = req.params;
     const query = `
-        SELECT p.Product_ID, p.Title, p.Description
-        FROM Product AS p
-        JOIN Orders AS o ON p.Product_ID = o.Product_ID
-        JOIN OrderItems AS oi ON o.Order_ID = oi.Order_ID
-        WHERE o.User_ID = ? AND o.Shipping_Status = 'Delivered'
-        GROUP BY p.Product_ID, p.Title, p.Description
+        SELECT r.Review_ID, r.Product_ID, r.Order_ID, r.Review_Status, r.Rating, r.Review_Text, r.Review_Date, p.Title AS Product_Title
+        FROM Review AS r
+        JOIN Product AS p ON r.Product_ID = p.Product_ID
+        WHERE r.User_ID = ?
     `;
+    
     db.query(query, [userId], (err, results) => {
+		// console.log('Number of records found:', results.length);
         if (err) {
-            console.error('Error fetching products to review:', err);
-            return res.status(500).json({ message: 'Error fetching products to review' });
+            console.error('Error fetching reviews for user:', err);
+            return res.status(500).json({ message: 'Error fetching reviews for user' });
         }
-        console.log('Products fetched for review:', results); // Log the results
+        
         res.status(200).json(results);
     });
 });
+
+// submit a review
+app.put('/submit-review', (req, res) => {
+    const { userId, productId, orderId, rating, reviewText } = req.body;
+
+    // Validate the required fields
+    if (!userId || !productId || !orderId) {
+        return res.status(400).json({ message: 'User ID, Product ID, and Order ID are required' });
+    }
+
+    // Update query to modify the review in the Review table if it exists
+    const query = `
+        UPDATE Review
+        SET Rating = ?, Review_Text = ?, Review_Status = ?
+        WHERE User_ID = ? AND Product_ID = ? AND Order_ID = ?
+    `;
+
+    const reviewStatus = rating ? 'Rated' : 'Pending';
+    const values = [rating || null, reviewText || null, reviewStatus, userId, productId, orderId];
+
+    db.query(query, values, (err, results) => {
+        if (err) {
+            console.error('Error updating review:', err);
+            return res.status(500).json({ message: 'Error updating review' });
+        }
+
+        if (results.affectedRows === 0) {
+            return res.status(404).json({ message: 'Review not found' });
+        }
+
+        // Respond with a success message
+        res.status(200).json({ message: 'Review updated successfully' });
+    });
+});
+
+// Fetch Notifications for a User
+app.get('/notifications/:userId', (req, res) => {
+    const { userId } = req.params;
+    const query = `
+        SELECT n.notification_id, n.message, n.notification_Date, n.status
+        FROM notification AS n
+        WHERE n.user_id = ?
+    `;
+    db.query(query, [userId], (err, results) => {
+        if (err) {
+            console.error('Error fetching notifications:', err);
+            return res.status(500).json({ message: 'Error fetching notifications' });
+        }
+		// console.log(`Number of notifications found for user ${userId}:`, results.length);
+        res.status(200).json(results);
+    });
+});
+
+// update notification to 'Read'
+app.put('/notifications/:notificationId/mark-read', (req, res) => {
+    const { notificationId } = req.params;
+
+    const query = `
+        UPDATE Notification
+        SET Status = 'Read'
+        WHERE Notification_ID = ?
+    `;
+
+    db.query(query, [notificationId], (err, results) => {
+        if (err) {
+            console.error('Error updating notification status:', err);
+            return res.status(500).json({ message: 'Error updating notification status' });
+        }
+
+        if (results.affectedRows === 0) {
+            return res.status(404).json({ message: 'Notification not found' });
+        }
+
+        res.status(200).json({ message: 'Notification status updated to Read' });
+    });
+});
+
+
 
 
 // Start the server
