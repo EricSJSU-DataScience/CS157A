@@ -193,7 +193,19 @@ CREATE TABLE OrderShipping (
     Delivery_Date DATE,
     FOREIGN KEY (Order_ID) REFERENCES Orders(Order_ID) ON DELETE CASCADE
 );
-
+CREATE TABLE Notification (
+    Notification_ID INT PRIMARY KEY,
+    User_ID INT,
+    Notification_ID INT AUTO_INCREMENT PRIMARY KEY,
+    User_ID INT NOT NULL,
+    Message TEXT,
+    Notification_Date DATE,
+    Status ENUM('Read', 'Unread'),
+    FOREIGN KEY (User_ID) REFERENCES User(User_ID)
+    Notification_Date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    Status ENUM('Read', 'Unread') DEFAULT 'Unread',
+    FOREIGN KEY (User_ID) REFERENCES User(User_ID) ON DELETE CASCADE
+);
 
 DELIMITER $$
 
