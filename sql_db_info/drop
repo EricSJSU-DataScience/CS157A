@@ -1,0 +1,11 @@
+drop table orderitems;
+drop table payment;
+drop table shipping;
+drop table orders;
+drop table shoppingcart;
+drop table review;
+drop table bid;
+drop table auction;
+drop table product;
+drop table notification;
+drop table user;
