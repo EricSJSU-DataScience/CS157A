@@ -1,7 +1,6 @@
--- CREATE DATABASE IF NOT EXISTS market;
--- USE market;
+CREATE DATABASE IF NOT EXISTS market;
+USE market;
 
--- Table: User
 CREATE TABLE User (
     User_ID INT AUTO_INCREMENT PRIMARY KEY,
     Name VARCHAR(100) NOT NULL,
@@ -24,9 +23,6 @@ CREATE TABLE UserRole (
     Role ENUM('Seller', 'Buyer') NOT NULL,
     FOREIGN KEY (User_ID) REFERENCES User(User_ID) ON DELETE CASCADE
 );
-
-
-
 
 CREATE TABLE Product (
     Product_ID INT AUTO_INCREMENT PRIMARY KEY,
@@ -102,12 +98,7 @@ CREATE TABLE ProductAuction (
     Auction_ID INT UNIQUE NOT NULL,
     FOREIGN KEY (Product_ID) REFERENCES Product(Product_ID) ON DELETE CASCADE
 );
-CREATE TABLE Bid (
-    Bid_ID INT AUTO_INCREMENT PRIMARY KEY,
-    Auction_ID INT NOT NULL,
-    User_ID INT NOT NULL,
-    FOREIGN KEY (Auction_ID, User_ID) REFERENCES BidDetails(Auction_ID, User_ID) ON DELETE CASCADE
-);
+
 CREATE TABLE BidDetails (
     Auction_ID INT NOT NULL,
     User_ID INT NOT NULL,
@@ -118,6 +109,14 @@ CREATE TABLE BidDetails (
     FOREIGN KEY (User_ID) REFERENCES User(User_ID) ON DELETE CASCADE,
     CHECK (Bid_Amount > 0)
 );
+
+CREATE TABLE Bid (
+    Bid_ID INT AUTO_INCREMENT PRIMARY KEY,
+    Auction_ID INT NOT NULL,
+    User_ID INT NOT NULL,
+    FOREIGN KEY (Auction_ID, User_ID) REFERENCES BidDetails(Auction_ID, User_ID) ON DELETE CASCADE
+);
+
 CREATE TABLE AuctionHighestBid (
     Auction_ID INT PRIMARY KEY,
     Highest_Bid_ID INT UNIQUE,
@@ -196,19 +195,6 @@ CREATE TABLE OrderShipping (
 );
 
 
-
--- Table: Notification
-CREATE TABLE Notification (
-    Notification_ID INT AUTO_INCREMENT PRIMARY KEY,
-    User_ID INT NOT NULL,
-    Message TEXT,
-    Notification_Date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    Status ENUM('Read', 'Unread') DEFAULT 'Unread',
-    FOREIGN KEY (User_ID) REFERENCES User(User_ID) ON DELETE CASCADE
-);
-
-
--- triggers
 DELIMITER $$
 
 CREATE TRIGGER after_order_delivered
@@ -216,10 +202,8 @@ AFTER UPDATE ON Orders
 FOR EACH ROW
 BEGIN
     IF NEW.Shipping_Status = 'Delivered' AND OLD.Shipping_Status != 'Delivered' THEN
-        INSERT INTO Review (Product_ID, User_ID, Order_ID, Review_Status)
-        SELECT oi.Product_ID, NEW.User_ID, NEW.Order_ID, 'Pending'
-        FROM OrderItems oi
-        WHERE oi.Order_ID = NEW.Order_ID;
+        INSERT INTO Review (Order_ID, Review_Status)
+        VALUES (NEW.Order_ID, 'Pending');
     END IF;
 END; $$
 
@@ -235,20 +219,19 @@ BEGIN
     VALUES (NEW.User_ID, notification_message, NOW());
 END; $$
 
--- update shipping status
-CREATE TRIGGER order_shipping_status_update 
+CREATE TRIGGER order_shipping_status_update
 AFTER UPDATE ON Orders
 FOR EACH ROW
 BEGIN
     DECLARE notification_message VARCHAR(255);
     IF NEW.Shipping_Status <> OLD.Shipping_Status THEN
         SET notification_message = CONCAT(
-            NOW(), ' - Order Number ', NEW.Order_ID, 'shipping status updated to: ', NEW.Shipping_Status
+            NOW(), ' - Order Number ', NEW.Order_ID, ' shipping status updated to: ', NEW.Shipping_Status
         );
         INSERT INTO Notification (User_ID, Message, Notification_Date)
         VALUES (NEW.User_ID, notification_message, NOW());
     END IF;
-END$$
+END; $$
 
 CREATE TRIGGER after_orderitems_insert
 AFTER INSERT ON OrderItems
@@ -257,7 +240,7 @@ BEGIN
     UPDATE Product
     SET Quantity = Quantity - NEW.Quantity
     WHERE Product_ID = NEW.Product_ID;
-END$$
+END; $$
 
 CREATE TRIGGER after_quantity_update
 AFTER UPDATE ON Product
@@ -268,7 +251,38 @@ BEGIN
         SET Status = 'Sold'
         WHERE Product_ID = NEW.Product_ID;
     END IF;
-END$$
+END; $$
+
+CREATE TRIGGER before_order_item_insert
+BEFORE INSERT ON OrderItems
+FOR EACH ROW
+BEGIN
+    DECLARE product_quantity INT;
+    SELECT Quantity INTO product_quantity
+    FROM Product
+    WHERE Product_ID = NEW.Product_ID;
+    IF product_quantity < NEW.Quantity THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Not enough quantity available for product';
+    END IF;
+END; $$
+
+CREATE TRIGGER after_bid_insert
+AFTER INSERT ON BidDetails
+FOR EACH ROW
+BEGIN
+    DECLARE current_highest DECIMAL(10, 2);
+    SELECT MAX(Bid_Amount) INTO current_highest
+    FROM BidDetails
+    WHERE Auction_ID = NEW.Auction_ID;
+
+    UPDATE AuctionHighestBid
+    SET Highest_Bid_ID = (SELECT Bid_ID FROM Bid WHERE Auction_ID = NEW.Auction_ID AND User_ID = NEW.User_ID)
+    WHERE Auction_ID = NEW.Auction_ID AND current_highest = NEW.Bid_Amount;
+END; $$
+
+DELIMITER ;
+
 
 /* CREATE TRIGGER before_order_item_insert
 BEFORE INSERT ON OrderItems
@@ -284,4 +298,3 @@ BEGIN
     END IF;
 END$$ */
 
-DELIMITER ;
