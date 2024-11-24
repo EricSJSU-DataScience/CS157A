@@ -29,27 +29,27 @@ INSERT INTO Product (Title, Description, Price, Quantity) VALUES
 
 INSERT INTO ProductSeller (Product_ID, Seller_ID) VALUES
 (1, 3),
-(2, 5), 
-(3, 3), 
-(4, 5);
- 
+(2, 5),
+(3, 3),
+(4, 5); 
+
 INSERT INTO ShoppingCart (User_ID, Product_ID, Quantity) VALUES
-(1, 1, 1),
+(1, 1, 1), 
 (4, 2, 2),
-(1, 3, 1);
+(1, 3, 1); 
 
 INSERT INTO Auction (Starting_Price, End_Date) VALUES
 (500.00, '2024-12-15'),
 (100.00, '2024-12-20');
 
 INSERT INTO ProductAuction (Product_ID, Auction_ID) VALUES
-(1, 1),
-(2, 2);
+(1, 1), 
+(2, 2); 
 
 INSERT INTO BidDetails (Auction_ID, User_ID, Bid_Amount, Bid_Time) VALUES
-(1, 3, 520.00, CURRENT_TIMESTAMP), 
-(1, 1, 530.00, CURRENT_TIMESTAMP),
-(2, 3, 120.00, CURRENT_TIMESTAMP); 
+(1, 3, 520.00, CURRENT_TIMESTAMP),
+(1, 1, 530.00, CURRENT_TIMESTAMP), 
+(2, 3, 120.00, CURRENT_TIMESTAMP);
 
 INSERT INTO Bid (Auction_ID, User_ID) VALUES
 (1, 3),
@@ -63,11 +63,10 @@ INSERT INTO Orders (User_ID, Total_Amount, Payment_Status, Shipping_Status, Orde
 (4, 449.50, 'Pending', 'Pending', '2024-11-04 13:00:00');
 
 INSERT INTO OrderItems (Order_ID, Product_ID, Quantity) VALUES
-(1, 1, 1), 
+(1, 1, 1),
 (2, 2, 2), 
-(3, 3, 1),
+(3, 3, 1), 
 (4, 4, 5);
-
 
 INSERT INTO OrderPayment (Order_ID, Payment_Amount) VALUES
 (1, 699.99),
@@ -107,6 +106,10 @@ INSERT INTO ReviewRating (Review_ID, Rating) VALUES
 (1, 5),
 (2, 4);
 
+UPDATE Orders 
+SET Shipping_Status = 'Shipped'
+WHERE Order_ID = 1;
 
-UPDATE Orders SET Shipping_Status = 'Shipped' WHERE Order_ID = 1;
-UPDATE Orders SET Shipping_Status = 'Delivered' WHERE Order_ID = 1;
+UPDATE Orders 
+SET Shipping_Status = 'Delivered'
+WHERE Order_ID = 1;
