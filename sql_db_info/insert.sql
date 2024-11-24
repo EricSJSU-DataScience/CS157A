@@ -2,7 +2,8 @@ USE market;
 
 -- Insert data into User table
 INSERT INTO User (Name, Email, Password, Phone, Role) VALUES
-('Alice Smith', 'alice@example.com', '111', '1234567890', 'Buyer'),
+('test', 'test@test.com', '111', '3416789012', 'Buyer'),
+('Alice Smith', 'alice@example.com', 'hashedpassword1', '1234567890', 'Buyer'),
 ('Bob Johnson', 'bob@example.com', 'hashedpassword2', '2345678901', 'Seller'),
 ('Charlie Brown', 'charlie@example.com', 'hashedpassword3', '3456789012', 'Buyer'),
 ('Diana Prince', 'diana@example.com', 'hashedpassword4', '4567890123', 'Seller');
@@ -26,33 +27,63 @@ INSERT INTO Auction (Product_ID, Starting_Price, End_Date) VALUES
 (2, 100.00, '2024-12-20');
 
 -- Insert data into Bid table
-INSERT INTO Bid (Auction_ID, User_ID, Bid_Amount) VALUES
-(1, 3, 520.00),
-(1, 1, 530.00),
-(2, 3, 120.00);
+INSERT INTO BidDetails (Auction_ID, User_ID, Bid_Amount, Bid_Time) VALUES
+(1, 3, 520.00, CURRENT_TIMESTAMP),
+(1, 1, 530.00, CURRENT_TIMESTAMP),
+(2, 3, 120.00, CURRENT_TIMESTAMP);
+INSERT INTO Bid (Auction_ID, User_ID) VALUES
+(1, 3),
+(1, 1),
+(2, 3);
 
 -- Insert data into Orders table
-INSERT INTO Orders (User_ID, Product_ID, Quantity, Total_Amount, Payment_Status, Shipping_Status) VALUES
-(1, 1, 1, 699.99, 'Paid', 'Shipped'),
-(3, 2, 1, 149.99, 'Pending', 'Pending');
+INSERT INTO Orders (User_ID, Shipping_Address, Total_Amount, Payment_Status, Shipping_Status, Order_Date) VALUES
+(1, '123 Main St, Springfield', 699.99, 'Pending', 'Pending', '2024-11-01 10:00:00'),
+(2, '456 Elm St, Shelbyville', 299.98, 'Pending', 'Pending', '2024-11-02 11:00:00'),
+(3, '789 Oak St, Ogdenville', 24.99, 'Pending', 'Pending', '2024-11-03 12:00:00'),
+(4, '321 Pine St, Capital City', 449.5, 'Pending', 'Pending', '2024-11-04 13:00:00');
+
+-- Insert data into OrderItems table
+INSERT INTO OrderItems (Order_ID, Product_ID, Quantity) VALUES
+(1, 1, 1),
+(2, 2, 2),
+(3, 3, 1),
+(4, 4, 5);
 
 -- Insert data into Payment table
-INSERT INTO Payment (Order_ID, Payment_Method, Payment_Amount) VALUES
-(1, 'Credit Card', 699.99),
-(2, 'PayPal', 149.99);
+INSERT INTO OrderPayment (Order_ID, Payment_Amount) VALUES
+(1, 699.99),
+(2, 299.98),
+(3, 24.99),
+(4, 449.50);
+INSERT INTO PaymentDetails (Order_ID, Payment_Method, Payment_Date) VALUES
+(1, 'Credit Card', CURRENT_TIMESTAMP),
+(2, 'PayPal', CURRENT_TIMESTAMP),
+(3, 'Credit Card', CURRENT_TIMESTAMP),
+(4, 'PayPal', CURRENT_TIMESTAMP);
+INSERT INTO Payment (Order_ID) VALUES
+(1),
+(2),
+(3),
+(4);
 
 -- Insert data into Review table
-INSERT INTO Review (Product_ID, User_ID, Rating, Review_Text) VALUES
-(1, 1, 5, 'Excellent product!'),
-(2, 3, 4, 'Very stylish and comfortable'),
-(3, 1, 3, 'Decent content but could be better');
+-- Review create upon order 'Delivered'
 
 -- Insert data into Shipping table
-INSERT INTO Shipping (Order_ID, Shipping_Address, Shipping_Info, Shipping_Method, Tracking_Number, Shipping_Date, Delivery_Date) VALUES
-(1, '123 Main St, Springfield', 'Leave at front door', 'Express', 'TRACK123456', '2024-11-20', '2024-11-22'),
-(2, '456 Elm St, Metropolis', 'Ring doorbell on arrival', 'Standard', 'TRACK789012', '2024-11-21', '2024-11-25');
+INSERT INTO Tracking (Tracking_Number, Shipping_Method, Shipping_Date, Delivery_Date) VALUES
+('TRACK123456', 'Express', '2024-11-20', '2024-11-22'),
+('TRACK789012', 'Standard', '2024-11-21', '2024-11-25');
+INSERT INTO Shipping (Order_ID, Tracking_Number) VALUES
+(1, 'TRACK123456'),
+(2, 'TRACK789012');
+INSERT INTO OrderShipping (Order_ID, Shipping_Address, Shipping_Info, Shipping_Method, Shipping_Date, Delivery_Date) VALUES
+(1, '123 Main St, Springfield', 'Leave at front door', 'Express', '2024-11-20', '2024-11-22'),
+(2, '456 Elm St, Metropolis', 'Ring doorbell on arrival', 'Standard', '2024-11-21', '2024-11-25');
 
 -- Insert data into Notification table
-INSERT INTO Notification (User_ID, Message, Status) VALUES
-(1, 'Your order has been shipped', 'Unread'),
-(3, 'New bid placed on your auction', 'Read');
+-- Notification create upon order creation.
+-- Notification create upon order shipping status change.
+UPDATE Orders SET Shipping_Status = 'Shipped' WHERE Order_ID = 1;
+UPDATE Orders SET Shipping_Status = 'Delivered' WHERE Order_ID = 1;
+
