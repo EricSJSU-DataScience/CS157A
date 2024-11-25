@@ -143,11 +143,12 @@ CREATE TABLE PaymentDetails (
 );
 
 CREATE TABLE OrderInfo (
-    Order_ID INT PRIMARY KEY,
+    Order_ID INT NOT NULL,
     Product_ID INT NOT NULL,
     User_ID INT NOT NULL,
     FOREIGN KEY (Product_ID) REFERENCES Product(Product_ID) ON DELETE CASCADE,
-    FOREIGN KEY (User_ID) REFERENCES User(User_ID) ON DELETE CASCADE
+    FOREIGN KEY (User_ID) REFERENCES User(User_ID) ON DELETE CASCADE,
+    FOREIGN KEY (Order_ID) REFERENCES Orders(Order_ID) ON DELETE CASCADE
 );
 
 CREATE TABLE Review (
@@ -156,7 +157,7 @@ CREATE TABLE Review (
     Review_Text TEXT DEFAULT NULL,
     Review_Status ENUM('Pending', 'Rated') DEFAULT 'Pending',
     Review_Date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (Order_ID) REFERENCES OrderInfo(Order_ID) ON DELETE CASCADE
+    FOREIGN KEY (Order_ID) REFERENCES Orders(Order_ID) ON DELETE CASCADE
 );
 
 CREATE TABLE ReviewRating (
@@ -230,34 +231,3 @@ BEGIN
     END IF;
 END$$ */
 
-DROP TRIGGER IF EXISTS after_order_delivered;
-DROP TRIGGER IF EXISTS after_order_insert;
-DROP TRIGGER IF EXISTS order_shipping_status_update;
-DROP TRIGGER IF EXISTS after_orderitems_insert;
-DROP TRIGGER IF EXISTS after_quantity_update;
-
--- Drop tables in reverse order of creation to handle foreign key dependencies
-DROP TABLE IF EXISTS OrderShipping;
-DROP TABLE IF EXISTS Shipping;
-DROP TABLE IF EXISTS Tracking;
-DROP TABLE IF EXISTS ReviewRating;
-DROP TABLE IF EXISTS Review;
-DROP TABLE IF EXISTS OrderInfo;
-DROP TABLE IF EXISTS PaymentDetails;
-DROP TABLE IF EXISTS OrderPayment;
-DROP TABLE IF EXISTS Payment;
-DROP TABLE IF EXISTS Notification;
-DROP TABLE IF EXISTS AuctionHighestBid;
-DROP TABLE IF EXISTS Bid;
-DROP TABLE IF EXISTS BidDetails;
-DROP TABLE IF EXISTS ProductAuction;
-DROP TABLE IF EXISTS Auction;
-DROP TABLE IF EXISTS ShoppingCart;
-DROP TABLE IF EXISTS OrderItems;
-DROP TABLE IF EXISTS ShippingDetails;
-DROP TABLE IF EXISTS Orders;
-DROP TABLE IF EXISTS ProductSeller;
-DROP TABLE IF EXISTS Product;
-DROP TABLE IF EXISTS UserRole;
-DROP TABLE IF EXISTS UserContact;
-DROP TABLE IF EXISTS User;
