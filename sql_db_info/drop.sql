@@ -12,6 +12,7 @@ DROP TABLE IF EXISTS Payment;
 drop table auctionhighestbid;
 DROP TABLE IF EXISTS Bid;
 drop table biddetails;
+drop table productauction;
 DROP TABLE IF EXISTS Auction;
 DROP TABLE IF EXISTS ShoppingCart;
 DROP TABLE IF EXISTS OrderItems;
@@ -22,9 +23,8 @@ drop table orderinfo;
 drop table paymentdetails;
 DROP TABLE IF EXISTS Orders;
 DROP TABLE IF EXISTS ProductSeller;
-drop table productauction;
+
 DROP TABLE IF EXISTS Product;
 DROP TABLE IF EXISTS UserRole;
-DROP TABLE IF EXISTS UserContact;
 DROP TABLE IF EXISTS User;
 drop table tracking;
