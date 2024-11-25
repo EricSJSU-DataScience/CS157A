@@ -7,13 +7,6 @@ INSERT INTO User (Name, Email, Password) VALUES
 ('Charlie Brown', 'charlie@example.com', 'hashedpassword3'),
 ('Diana Prince', 'diana@example.com', 'hashedpassword4');
 
-INSERT INTO UserContact (User_ID, Phone) VALUES
-(1, '3416789012'),
-(2, '1234567890'),
-(3, '2345678901'),
-(4, '3456789012'),
-(5, '4567890123');
-
 INSERT INTO UserRole (User_ID, Role) VALUES
 (1, 'Buyer'),
 (2, 'Buyer'),
