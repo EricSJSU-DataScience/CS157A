@@ -120,14 +120,10 @@ CREATE TABLE Notification (
 );
 
 CREATE TABLE Payment (
-    Payment_ID INT AUTO_INCREMENT PRIMARY KEY,
+    Payment_ID INT AUTO_INCREMENT,
     Order_ID INT NOT NULL,
-    FOREIGN KEY (Order_ID) REFERENCES Orders(Order_ID) ON DELETE CASCADE
-);
-
-CREATE TABLE OrderPayment (
-    Order_ID INT PRIMARY KEY,
     Payment_Amount DECIMAL(10, 2) NOT NULL,
+    PRIMARY KEY (Payment_ID, Order_ID),
     FOREIGN KEY (Order_ID) REFERENCES Orders(Order_ID) ON DELETE CASCADE
 );
 
