@@ -61,23 +61,17 @@ INSERT INTO OrderItems (Order_ID, Product_ID, Quantity) VALUES
 (3, 3, 1), 
 (4, 4, 5);
 
-INSERT INTO OrderPayment (Order_ID, Payment_Amount) VALUES
-(1, 699.99),
-(2, 299.98),
-(3, 24.99),
-(4, 449.50);
-
 INSERT INTO PaymentDetails (Order_ID, Payment_Method, Payment_Date) VALUES
 (1, 'Credit Card', CURRENT_TIMESTAMP),
 (2, 'PayPal', CURRENT_TIMESTAMP),
 (3, 'Credit Card', CURRENT_TIMESTAMP),
 (4, 'PayPal', CURRENT_TIMESTAMP);
 
-INSERT INTO Payment (Order_ID) VALUES
-(1),
-(2),
-(3),
-(4);
+INSERT INTO Payment (Order_ID, Payment_Amount) VALUES
+(1, 699.99),
+(2, 299.98),
+(3, 24.99),
+(4, 449.50);
 
 INSERT INTO Tracking (Tracking_Number, Shipping_Method, Shipping_Date, Delivery_Date) VALUES
 ('TRACK123456', 'Express', '2024-11-20', '2024-11-22'),
