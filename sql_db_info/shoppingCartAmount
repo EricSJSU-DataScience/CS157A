@@ -1,0 +1,8 @@
+SELECT 
+    SUM(Product.Price * ShoppingCart.Quantity) AS Total_Amount
+FROM 
+    ShoppingCart
+JOIN 
+    Product ON ShoppingCart.Product_ID = Product.Product_ID
+WHERE 
+    ShoppingCart.User_ID = 1; -- change userID to view different shopping cart totals
