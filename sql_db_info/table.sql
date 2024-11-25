@@ -6,21 +6,15 @@ CREATE TABLE User (
     Name VARCHAR(100) NOT NULL,
     Email VARCHAR(100) UNIQUE NOT NULL,
     Password VARCHAR(255) NOT NULL,
+    Phone VARCHAR(15),
     Created_At TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     Updated_At TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-CREATE TABLE UserContact (
-    Contact_ID INT AUTO_INCREMENT PRIMARY KEY,
-    User_ID INT NOT NULL,
-    Phone VARCHAR(15),
-    FOREIGN KEY (User_ID) REFERENCES User(User_ID) ON DELETE CASCADE
-);
-
 CREATE TABLE UserRole (
-    Role_ID INT AUTO_INCREMENT PRIMARY KEY,
     User_ID INT NOT NULL,
     Role ENUM('Seller', 'Buyer') NOT NULL,
+    PRIMARY KEY (User_ID, Role),
     FOREIGN KEY (User_ID) REFERENCES User(User_ID) ON DELETE CASCADE
 );
 
@@ -35,9 +29,9 @@ CREATE TABLE Product (
 );
 
 CREATE TABLE ProductSeller (
-    ProductSeller_ID INT AUTO_INCREMENT PRIMARY KEY,
     Product_ID INT NOT NULL,
     Seller_ID INT NOT NULL,
+    PRIMARY KEY (Product_ID, Seller_ID),
     FOREIGN KEY (Product_ID) REFERENCES Product(Product_ID) ON DELETE CASCADE,
     FOREIGN KEY (Seller_ID) REFERENCES User(User_ID) ON DELETE CASCADE
 );
@@ -45,7 +39,7 @@ CREATE TABLE ProductSeller (
 CREATE TABLE Orders (
     Order_ID INT AUTO_INCREMENT PRIMARY KEY,
     User_ID INT NOT NULL,
-    Total_Amount DECIMAL(10, 2) NOT NULL,
+    Total_Amount DECIMAL(10,2) NOT NULL,
     Payment_Status ENUM('Paid', 'Pending', 'Cancelled') DEFAULT 'Pending',
     Shipping_Status ENUM('Pending', 'Shipped', 'Delivered', 'Cancelled') DEFAULT 'Pending',
     Order_Date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -84,8 +78,10 @@ CREATE TABLE Auction (
 );
 
 CREATE TABLE ProductAuction (
-    Product_ID INT PRIMARY KEY,
-    Auction_ID INT UNIQUE NOT NULL,
+    Auction_ID INT NOT NULL,
+    Product_ID INT NOT NULL,
+    PRIMARY KEY (Auction_ID, Product_ID),
+    FOREIGN KEY (Auction_ID) REFERENCES Auction(Auction_ID) ON DELETE CASCADE,
     FOREIGN KEY (Product_ID) REFERENCES Product(Product_ID) ON DELETE CASCADE
 );
 
@@ -215,9 +211,9 @@ END; $$
 
 DELIMITER ;
 
+DELIMITER $$
 
-
-/* CREATE TRIGGER before_order_item_insert
+CREATE TRIGGER before_order_item_insert
 BEFORE INSERT ON OrderItems
 FOR EACH ROW
 BEGIN
@@ -225,9 +221,15 @@ BEGIN
     SELECT Quantity INTO product_quantity
     FROM Product
     WHERE Product_ID = NEW.Product_ID;
-    IF product_quantity < NEW.Quantity THEN
-        SIGNAL SQLSTATE '45000' 
-        SET MESSAGE_TEXT = 'Not enough quantity available for product';
-    END IF;
-END$$ */
 
+    IF product_quantity < NEW.Quantity THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Not enough inventory!';
+    ELSE
+        UPDATE Product
+        SET Quantity = Quantity - NEW.Quantity
+        WHERE Product_ID = NEW.Product_ID;
+    END IF;
+END$$
+
+DELIMITER ;
