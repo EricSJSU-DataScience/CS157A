@@ -6,25 +6,16 @@ DROP TRIGGER IF EXISTS after_quantity_update;
 
 DROP TABLE IF EXISTS Notification;
 DROP TABLE IF EXISTS Shipping;
-drop table reviewrating;
 DROP TABLE IF EXISTS Review;
 DROP TABLE IF EXISTS Payment;
-drop table auctionhighestbid;
 DROP TABLE IF EXISTS Bid;
-drop table biddetails;
-drop table productauction;
 DROP TABLE IF EXISTS Auction;
 DROP TABLE IF EXISTS ShoppingCart;
 DROP TABLE IF EXISTS OrderItems;
 DROP TABLE IF EXISTS ShippingDetails;
 drop table ordershipping;
-drop table orderpayment;
-drop table orderinfo;
-drop table paymentdetails;
 DROP TABLE IF EXISTS Orders;
 DROP TABLE IF EXISTS ProductSeller;
-
 DROP TABLE IF EXISTS Product;
 DROP TABLE IF EXISTS UserRole;
 DROP TABLE IF EXISTS User;
-drop table tracking;
