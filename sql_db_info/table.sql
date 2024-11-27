@@ -46,13 +46,6 @@ CREATE TABLE Orders (
     FOREIGN KEY (User_ID) REFERENCES User(User_ID) ON DELETE CASCADE
 );
 
-CREATE TABLE ShippingDetails (
-    Shipping_ID INT AUTO_INCREMENT PRIMARY KEY,
-    Order_ID INT NOT NULL,
-    Shipping_Address VARCHAR(255) NOT NULL,
-    FOREIGN KEY (Order_ID) REFERENCES Orders(Order_ID) ON DELETE CASCADE
-);
-
 CREATE TABLE OrderItems (
     Order_ID INT NOT NULL,
     Product_ID INT NOT NULL,
@@ -74,40 +67,21 @@ CREATE TABLE ShoppingCart (
 CREATE TABLE Auction (
     Auction_ID INT AUTO_INCREMENT PRIMARY KEY,
     Starting_Price DECIMAL(10, 2) NOT NULL,
-    End_Date DATE NOT NULL
-);
-
-CREATE TABLE ProductAuction (
-    Auction_ID INT NOT NULL,
-    Product_ID INT NOT NULL,
-    PRIMARY KEY (Auction_ID, Product_ID),
-    FOREIGN KEY (Auction_ID) REFERENCES Auction(Auction_ID) ON DELETE CASCADE,
+    End_Date DATE NOT NULL, 
+    Product_ID INT NOT NULL, 
+    Highest_Bid DECIMAL(10,2),
     FOREIGN KEY (Product_ID) REFERENCES Product(Product_ID) ON DELETE CASCADE
-);
-
-CREATE TABLE BidDetails (
-    Auction_ID INT NOT NULL,
-    User_ID INT NOT NULL,
-    Bid_Amount DECIMAL(10, 2) NOT NULL,
-    Bid_Time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (Auction_ID, User_ID),
-    FOREIGN KEY (Auction_ID) REFERENCES Auction(Auction_ID) ON DELETE CASCADE,
-    FOREIGN KEY (User_ID) REFERENCES User(User_ID) ON DELETE CASCADE,
-    CHECK (Bid_Amount > 0)
 );
 
 CREATE TABLE Bid (
     Bid_ID INT AUTO_INCREMENT PRIMARY KEY,
     Auction_ID INT NOT NULL,
     User_ID INT NOT NULL,
-    FOREIGN KEY (Auction_ID, User_ID) REFERENCES BidDetails(Auction_ID, User_ID) ON DELETE CASCADE
-);
-
-CREATE TABLE AuctionHighestBid (
-    Auction_ID INT PRIMARY KEY,
-    Highest_Bid_ID INT UNIQUE,
+    Bid_Amount DECIMAL(10, 2) NOT NULL,
+    Bid_Time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (Auction_ID) REFERENCES Auction(Auction_ID) ON DELETE CASCADE,
-    FOREIGN KEY (Highest_Bid_ID) REFERENCES Bid(Bid_ID) ON DELETE SET NULL
+    FOREIGN KEY (User_ID) REFERENCES User(User_ID) ON DELETE CASCADE,
+    CHECK (Bid_Amount > 0)
 );
 
 CREATE TABLE Notification (
@@ -120,28 +94,24 @@ CREATE TABLE Notification (
 );
 
 CREATE TABLE Payment (
-    Payment_ID INT AUTO_INCREMENT,
-    Order_ID INT NOT NULL,
+    -- Payment_ID INT AUTO_INCREMENT,
+    Payment_Order_ID INT NOT NULL,
     Payment_Amount DECIMAL(10, 2) NOT NULL,
-    PRIMARY KEY (Payment_ID, Order_ID),
-    FOREIGN KEY (Order_ID) REFERENCES Orders(Order_ID) ON DELETE CASCADE
-);
-
-CREATE TABLE PaymentDetails (
-    Order_ID INT PRIMARY KEY,
     Payment_Method ENUM('Credit Card', 'PayPal') NOT NULL,
     Payment_Date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (Order_ID) REFERENCES Orders(Order_ID) ON DELETE CASCADE
+    PRIMARY KEY (Payment_Order_ID),
+    FOREIGN KEY (Payment_Order_ID) REFERENCES Orders(Order_ID) ON DELETE CASCADE
 );
 
-CREATE TABLE OrderInfo (
+-- can possibly remove
+/*CREATE TABLE OrderInfo (
     Order_ID INT NOT NULL,
     Product_ID INT NOT NULL,
     User_ID INT NOT NULL,
     FOREIGN KEY (Product_ID) REFERENCES Product(Product_ID) ON DELETE CASCADE,
     FOREIGN KEY (User_ID) REFERENCES User(User_ID) ON DELETE CASCADE,
     FOREIGN KEY (Order_ID) REFERENCES Orders(Order_ID) ON DELETE CASCADE
-);
+);*/
 
 CREATE TABLE Review (
     Review_ID INT AUTO_INCREMENT PRIMARY KEY,
@@ -149,34 +119,15 @@ CREATE TABLE Review (
     Review_Text TEXT DEFAULT NULL,
     Review_Status ENUM('Pending', 'Rated') DEFAULT 'Pending',
     Review_Date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (Order_ID) REFERENCES Orders(Order_ID) ON DELETE CASCADE
-);
-
-CREATE TABLE ReviewRating (
-    Review_ID INT PRIMARY KEY,
     Rating INT CHECK (Rating BETWEEN 1 AND 5) DEFAULT NULL,
-    FOREIGN KEY (Review_ID) REFERENCES Review(Review_ID) ON DELETE CASCADE
-);
-
-CREATE TABLE Tracking (
-    Tracking_Number VARCHAR(50) PRIMARY KEY,
-    Shipping_Method ENUM('Standard', 'Express') DEFAULT 'Standard',
-    Shipping_Date DATE,
-    Delivery_Date DATE
-);
-
-CREATE TABLE Shipping (
-    Shipping_ID INT AUTO_INCREMENT PRIMARY KEY,
-    Order_ID INT NOT NULL,
-    Tracking_Number VARCHAR(50),
-    FOREIGN KEY (Order_ID) REFERENCES Orders(Order_ID) ON DELETE CASCADE,
-    FOREIGN KEY (Tracking_Number) REFERENCES Tracking(Tracking_Number)
+    FOREIGN KEY (Order_ID) REFERENCES Orders(Order_ID) ON DELETE CASCADE
 );
 
 CREATE TABLE OrderShipping (
     Order_ID INT PRIMARY KEY,
     Shipping_Address TEXT NOT NULL,
     Shipping_Info TEXT,
+    Tracking_Number VARCHAR(50) NOT NULL,
     Shipping_Method ENUM('Standard', 'Express') DEFAULT 'Standard',
     Shipping_Date DATE,
     Delivery_Date DATE,
