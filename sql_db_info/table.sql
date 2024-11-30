@@ -50,7 +50,7 @@ CREATE TABLE OrderItems (
     Order_ID INT NOT NULL,
     Product_ID INT NOT NULL,
     Quantity INT NOT NULL,
-    PRIMARY KEY (Order_ID, Product_ID),
+    PRIMARY KEY (Order_ID),
     FOREIGN KEY (Order_ID) REFERENCES Orders(Order_ID) ON DELETE CASCADE,
     FOREIGN KEY (Product_ID) REFERENCES Product(Product_ID) ON DELETE CASCADE
 );
@@ -59,7 +59,7 @@ CREATE TABLE ShoppingCart (
     User_ID INT NOT NULL,
     Product_ID INT NOT NULL,
     Quantity INT DEFAULT 1,
-    PRIMARY KEY (User_ID, Product_ID),
+    PRIMARY KEY (User_ID),
     FOREIGN KEY (User_ID) REFERENCES User(User_ID) ON DELETE CASCADE,
     FOREIGN KEY (Product_ID) REFERENCES Product(Product_ID) ON DELETE CASCADE
 );
