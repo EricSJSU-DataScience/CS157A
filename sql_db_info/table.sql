@@ -128,7 +128,6 @@ CREATE TABLE OrderShipping (
     Order_ID INT PRIMARY KEY,
     User_ID INT NOT NULL, 
     Shipping_Address TEXT NOT NULL,
-    Shipping_Info TEXT,
     Tracking_Number VARCHAR(50) NOT NULL,
     Shipping_Method ENUM('Standard', 'Express') DEFAULT 'Standard',
     Shipping_Date DATE,
