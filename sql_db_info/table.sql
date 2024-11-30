@@ -4,17 +4,17 @@ USE market;
 CREATE TABLE User (
     User_ID INT AUTO_INCREMENT PRIMARY KEY,
     Name VARCHAR(100) NOT NULL,
-    Email VARCHAR(100) UNIQUE NOT NULL,
     Password VARCHAR(255) NOT NULL,
     Phone VARCHAR(15),
+    Role ENUM('Seller', 'Buyer') NOT NULL,
     Created_At TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     Updated_At TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-CREATE TABLE UserRole (
+CREATE TABLE UserEmail (
     User_ID INT NOT NULL,
-    Role ENUM('Seller', 'Buyer') NOT NULL,
-    PRIMARY KEY (User_ID),
+    Email VARCHAR(100) UNIQUE NOT NULL,
+    PRIMARY KEY (Email),
     FOREIGN KEY (User_ID) REFERENCES User(User_ID) ON DELETE CASCADE
 );
 
@@ -40,8 +40,8 @@ CREATE TABLE Orders (
     Order_ID INT AUTO_INCREMENT PRIMARY KEY,
     User_ID INT NOT NULL,
     Total_Amount DECIMAL(10,2) NOT NULL,
-    Payment_Status ENUM('Paid', 'Pending', 'Cancelled') DEFAULT 'Pending',
-    Shipping_Status ENUM('Pending', 'Shipped', 'Delivered', 'Cancelled') DEFAULT 'Pending',
+    Payment_Status ENUM('Paid', 'Cancelled') DEFAULT 'Paid',
+    Shipping_Status ENUM('Shipping', 'Shipped', 'Delivered', 'Cancelled') DEFAULT 'Shipping',
     Order_Date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (User_ID) REFERENCES User(User_ID) ON DELETE CASCADE
 );
@@ -79,9 +79,11 @@ CREATE TABLE Bid (
     User_ID INT NOT NULL,
     Bid_Amount DECIMAL(10, 2) NOT NULL,
     Bid_Time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    Current_HighestBid DECIMAL(10,2),
     FOREIGN KEY (Auction_ID) REFERENCES Auction(Auction_ID) ON DELETE CASCADE,
     FOREIGN KEY (User_ID) REFERENCES User(User_ID) ON DELETE CASCADE,
-    CHECK (Bid_Amount > 0)
+    FOREIGN KEY (Current_HighestBid) REFERENCES Auction(Highest_Bid) ON DELETE CASCADE,
+    CHECK (Bid_Amount > Current_HighestBid)
 );
 
 CREATE TABLE Notification (
@@ -117,7 +119,6 @@ CREATE TABLE Review (
     Review_ID INT AUTO_INCREMENT PRIMARY KEY,
     Order_ID INT NOT NULL,
     Review_Text TEXT DEFAULT NULL,
-    Review_Status ENUM('Pending', 'Rated') DEFAULT 'Pending',
     Review_Date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     Rating INT CHECK (Rating BETWEEN 1 AND 5) DEFAULT NULL,
     FOREIGN KEY (Order_ID) REFERENCES Orders(Order_ID) ON DELETE CASCADE
