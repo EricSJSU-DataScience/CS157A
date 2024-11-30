@@ -14,7 +14,7 @@ CREATE TABLE User (
 CREATE TABLE UserRole (
     User_ID INT NOT NULL,
     Role ENUM('Seller', 'Buyer') NOT NULL,
-    PRIMARY KEY (User_ID, Role),
+    PRIMARY KEY (User_ID),
     FOREIGN KEY (User_ID) REFERENCES User(User_ID) ON DELETE CASCADE
 );
 
