@@ -39,13 +39,20 @@ project/
 3. Set up the database:
    - Open MySQL Workbench and create the necessary database tables.
    - Insert the initial data values as per the project's requirements.
+   - using in order: db_createtable.sql, db_trigger.sql, db_insert.sql, db_indexing.sql to setup database in MySQL
 
-4. Start the development server:
+4. Navigate to folder where server.js located
+
+5. Start the backend in a terminal:
+   ```bash
+   node server.js
+   ```
+
+6. Start the development server in another terminal:
    ```bash
    npm start
    ```
 
-5. Open another command line window for additional services (if required).
 
 ## Division of Work
 
