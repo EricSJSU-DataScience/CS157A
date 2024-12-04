@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import React, { useState, useEffect } from 'react';
 
 function Home() {
@@ -103,17 +102,3 @@ const styles = {
 };
 
 export default Home;
-=======
-import React from 'react';
-
-function Home() {
-    return (
-        <div>
-            <h2>Welcome to the Marketplace</h2>
-            <p>Explore our exclusive collection!</p>
-        </div>
-    );
-}
-
-export default Home;
->>>>>>> e051df02683753a0a0920eab0e832cdc1767567b
