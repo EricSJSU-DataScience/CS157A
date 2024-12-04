@@ -18,9 +18,19 @@ Auction and Marketplace System
 Ensure your project folder is organized as follows:
 ```plaintext
 project/
+|-- node_modules/
+|-- public/
 |-- src/
-|-- components/
+   |-- components/
+      |-- Auction.js
+      |-- Cart.js
+      |-- Home.js
+      |-- Login.js
+      |-- ...
+   |-- App.js
+   |-- ...
 |-- ...
+|-- server.js
 ```
 
 ## Setup Instructions
