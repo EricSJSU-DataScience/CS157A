@@ -53,7 +53,7 @@ project/
    - Open MySQL Workbench and create the necessary database tables.
    - Execute in order: db_createtable.sql, db_trigger.sql, db_insert.sql, db_indexing.sql to setup database in MySQL
 
-4. Navigate to folder where server.js located
+4. Navigate to folder where server.js located, adjust MySQL Connetion section to local preference (user, password, database, port) accordingly.
 
 5. Start the backend in a terminal:
    ```bash
