@@ -35,6 +35,9 @@ project/
    ```bash
    npm install
    ```
+   ```bash
+   npm install express mysql2 cors
+   ```
 
 3. Set up the database:
    - Open MySQL Workbench and create the necessary database tables.
