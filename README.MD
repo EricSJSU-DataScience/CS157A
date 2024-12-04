@@ -38,8 +38,7 @@ project/
 
 3. Set up the database:
    - Open MySQL Workbench and create the necessary database tables.
-   - Insert the initial data values as per the project's requirements.
-   - using in order: db_createtable.sql, db_trigger.sql, db_insert.sql, db_indexing.sql to setup database in MySQL
+   - Execute in order: db_createtable.sql, db_trigger.sql, db_insert.sql, db_indexing.sql to setup database in MySQL
 
 4. Navigate to folder where server.js located
 
