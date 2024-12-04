@@ -18,9 +18,19 @@ Auction and Marketplace System
 Ensure your project folder is organized as follows:
 ```plaintext
 project/
+|-- node_modules/
+|-- public/
 |-- src/
-|-- components/
+   |-- components/
+      |-- Auction.js
+      |-- Cart.js
+      |-- Home.js
+      |-- Login.js
+      |-- ...
+   |-- App.js
+   |-- ...
 |-- ...
+|-- server.js
 ```
 
 ## Setup Instructions
@@ -35,12 +45,15 @@ project/
    ```bash
    npm install
    ```
+   ```bash
+   npm install express mysql2 cors
+   ```
 
 3. Set up the database:
    - Open MySQL Workbench and create the necessary database tables.
    - Execute in order: db_createtable.sql, db_trigger.sql, db_insert.sql, db_indexing.sql to setup database in MySQL
 
-4. Navigate to folder where server.js located
+4. Navigate to folder where server.js located, adjust MySQL Connetion section to local preference (user, password, database, port) accordingly.
 
 5. Start the backend in a terminal:
    ```bash
