@@ -1,9 +1,9 @@
 # Auction and Marketplace System
 
 
-# Project Setup Guide
+## Project Setup Guide
 
-## Prerequisites
+### Prerequisites
 
 1. **MySQL Workbench**
    - Install and set up MySQL Workbench.
@@ -13,7 +13,7 @@
    - Visit the [Node.js official website](https://nodejs.org/).
    - Download and install the latest stable version (LTS version is recommended).
 
-## Project Folder Structure
+### Project Folder Structure
 
 Ensure your project folder is organized as follows:
 ```
@@ -32,7 +32,7 @@ project/
 |-- ...
 |-- server.js
 ```
-## Setup Instructions
+### Setup Instructions
 
 1. Clone the project repository:
    ```bash
@@ -65,7 +65,7 @@ project/
    ```
 
 
-## Division of Work
+### Division of Work
 
 The responsibilities of each team member here.
 
