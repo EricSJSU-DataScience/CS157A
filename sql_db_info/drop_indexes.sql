@@ -1,0 +1,11 @@
+drop index idx_userRole on user;
+drop index idx_userEmail on UserEmail;
+drop index idx_status on Product;
+drop index idx_paymentStatus on Orders;
+drop index idx_quantity on ShoppingCart;
+drop index idx_highestBid on Auction;
+drop index idx_notifStatus on Notification;
+drop index idx_paymentMethod on Payment;
+drop index idx_rating on Review;
+drop index idx_orderShipMethod on OrderShipping;
+drop index idx_prodSell on ProductSeller;
