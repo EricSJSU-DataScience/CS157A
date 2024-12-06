@@ -59,7 +59,7 @@ CREATE TABLE ShoppingCart (
     User_ID INT NOT NULL,
     Product_ID INT NOT NULL,
     Quantity INT DEFAULT 1,
-    PRIMARY KEY (User_ID),
+    PRIMARY KEY (User_ID, Product_ID),
     FOREIGN KEY (User_ID) REFERENCES User(User_ID) ON DELETE CASCADE,
     FOREIGN KEY (Product_ID) REFERENCES Product(Product_ID) ON DELETE CASCADE
 );
@@ -82,7 +82,6 @@ CREATE TABLE Bid (
     Current_HighestBid DECIMAL(10,2),
     FOREIGN KEY (Auction_ID) REFERENCES Auction(Auction_ID) ON DELETE CASCADE,
     FOREIGN KEY (User_ID) REFERENCES User(User_ID) ON DELETE CASCADE,
-    FOREIGN KEY (Current_HighestBid) REFERENCES Auction(Highest_Bid) ON DELETE CASCADE,
     CHECK (Bid_Amount > Current_HighestBid)
 );
 
